@@ -5,18 +5,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Mail, Lock, Github } from "lucide-react";
 
-export default function Login() {
+export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const handleLogin = () => {
+    console.log({ email, password });
+    setEmail("");
+    setPassword("");
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <Card className="w-[380px] bg-card border border-border shadow-xl">
+        <Card className="w-[400px] bg-card border border-border shadow-xl">
           <CardContent className="p-6">
 
             {/* Heading */}
@@ -30,35 +36,34 @@ export default function Login() {
             </div>
 
             {/* Email */}
-            <div className="mb-4">
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 text-muted-foreground" size={18} />
-                <Input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
+            <div className="mb-4 relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-10 h-11"
+              />
             </div>
 
             {/* Password */}
-            <div className="mb-4">
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 text-muted-foreground" size={18} />
-                <Input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
+            <div className="mb-4 relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10 h-11"
+              />
             </div>
 
             {/* Login Button */}
-            <Button className="w-full bg-primary hover:bg-primary/90">
+            <Button
+              onClick={handleLogin}
+              className="w-full bg-primary hover:bg-primary/90 h-11"
+            >
               Login
             </Button>
 
@@ -71,11 +76,17 @@ export default function Login() {
 
             {/* Social Buttons */}
             <div className="flex flex-col gap-3">
-              <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+              <Button
+                variant="outline"
+                className="w-full h-11 flex items-center justify-center"
+              >
                 Continue with Google
               </Button>
 
-              <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+              <Button
+                variant="outline"
+                className="w-full h-11 flex items-center justify-center gap-2"
+              >
                 <Github size={18} />
                 Continue with GitHub
               </Button>
