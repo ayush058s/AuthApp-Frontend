@@ -4,15 +4,16 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { User, Mail, Lock, Github } from "lucide-react";
+import toast from "react-hot-toast";
+import type RegisterData from "@/models/RegisterData";
+import { registerUser } from "@/services/AuthService";  
+import { useNavigate } from "react-router";
 
-interface RegisterData{
-  name: string;
-  email: string;
-  password: string;    
-}
+
 
 export default function SignupPage() {
 
+  //type RegisterData is created in models and imported
   const [data, setData] = useState<RegisterData>({
     name: "",
     email: "",
@@ -21,6 +22,9 @@ export default function SignupPage() {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // navigates to login after submition
+  const navigate = useNavigate();
 
   // handling form change
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,24 +35,44 @@ export default function SignupPage() {
   }
 
   // handling form submit
-  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setLoading(true);
-    setError(null);
-
+   
 
     // validation 
+    // can also use required in input field
     if(data.name.trim() === ""){
+      toast.error("Name is required");
+      return;
+    }
+    if(data.email.trim() === ""){
+      toast.error("Email is required");
+      return;
+    }
+    if(data.password.trim() === ""){
+      toast.error("Password is required");
       return;
     }
 
-    // simulate submit
-    console.log(data);
+    try {
 
-    setTimeout(() => {
-      setLoading(false);
-      setData({ name: "", email: "", password: "" });
-    }, 500);
+      const result = await registerUser(data);
+      toast.success("User registered successfully");
+      
+      // clears the fields
+      setData({
+        name: "",
+        email: "",
+        password: ""
+      });
+      // navigate: login
+      navigate("/login");
+      
+    } catch (error) {
+      toast.error("error in registering the user");
+    }
+
+    
   }
 
   return (
@@ -83,7 +107,7 @@ export default function SignupPage() {
                 value={data.name}
                 onChange={handleInputChange}
                 className="pl-10 h-11"
-                required
+                // required
               />
             </div>
 
@@ -97,7 +121,7 @@ export default function SignupPage() {
                 value={data.email}
                 onChange={handleInputChange}
                 className="pl-10 h-11"
-                required
+                // required
               />
             </div>
 
@@ -111,7 +135,7 @@ export default function SignupPage() {
                 value={data.password}
                 onChange={handleInputChange}
                 className="pl-10 h-11"
-                required
+                // required
               />
             </div>
 
