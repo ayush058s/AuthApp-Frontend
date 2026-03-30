@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,16 +12,15 @@ import { useNavigate } from "react-router";
 
 
 export default function SignupPage() {
-
   //type RegisterData is created in models and imported
   const [data, setData] = useState<RegisterData>({
     name: "",
     email: "",
-    password: ""
-  })
+    password: "",
+  });
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<any>(null);
 
   // navigates to login after submition
   const navigate = useNavigate();
@@ -31,49 +30,48 @@ export default function SignupPage() {
     setData((value) => ({
       ...value,
       [event.target.name]: event.target.value,
-    }))
-  }
+    }));
+  };
 
   // handling form submit
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-   
+    
 
     // validation 
     // can also use required in input field
-    if(data.name.trim() === ""){
+    if (data.name.trim() === "") {
       toast.error("Name is required");
       return;
     }
-    if(data.email.trim() === ""){
+    if (data.email.trim() === "") {
       toast.error("Email is required");
       return;
     }
-    if(data.password.trim() === ""){
+    if (data.password.trim() === "") {
       toast.error("Password is required");
       return;
     }
 
     try {
-
-      const result = await registerUser(data);
+      setLoading(true);
+      await registerUser(data);
       toast.success("User registered successfully");
-      
+
       // clears the fields
       setData({
         name: "",
         email: "",
-        password: ""
+        password: "",
       });
       // navigate: login
       navigate("/login");
-      
     } catch (error) {
-      toast.error("error in registering the user");
+      console.log(error);
+      setError("Error in registering the user");
+      toast.error("Error in registering the user");
     }
-
-    
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
@@ -143,6 +141,8 @@ export default function SignupPage() {
             <Button type="submit" disabled={loading} className="w-full bg-primary hover:bg-primary/90 h-11">
               {loading ? "Signing up..." : "Sign Up"}
             </Button>
+
+            {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
 
             </form>
 

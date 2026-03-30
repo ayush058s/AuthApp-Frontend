@@ -3,16 +3,69 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { Mail, Lock, Github } from "lucide-react";
+import { Mail, Lock, Github, CheckCircle2Icon, CheckCircleIcon, AlertCircleIcon } from "lucide-react";
+import type { LoginData } from "@/models/LoginData";
+import { loginUser } from "@/services/AuthService";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [data, setData] = useState<LoginData>({
+    email: "",
+    password: "",
+  });
 
-  const handleLogin = () => {
-    console.log({ email, password });
-    setEmail("");
-    setPassword("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<any>(null);
+
+  const navigate = useNavigate();
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setData((prev) => {
+      return {
+        ...prev, // here prev is the old state of data object 
+        [event.target.name]: event.target.value, // here update and return the updated one
+      };
+    });
+  };
+
+  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    
+
+    if (data.email.trim() === "") {
+      toast.error("Email is required");
+      return;
+    }
+    if (data.password.trim() === "") {
+      toast.error("Password is required");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const userInfo = await loginUser(data);
+
+      toast.success("User logged in successfully");
+      console.log(userInfo);
+      setData({
+        email: "",
+        password: "",
+      });
+      navigate("/dashboard");
+    } catch (error: any) {
+      setError(error);
+      // toast.error("Error in login");
+      if(error?.status == 400){
+        setError(error);
+      }else{
+        setError(error);
+      }
+    } finally{
+      setLoading(false);
+    }
   };
 
   return (
@@ -22,18 +75,32 @@ export default function LoginPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
+
         <Card className="w-[400px] bg-card border border-border shadow-xl">
           <CardContent className="p-6">
-
-            {/* Heading */}
+<form onSubmit={handleFormSubmit}>
+            
+              {/* Heading */}
             <div className="text-center mb-6">
               <h1 className="text-2xl font-bold bg-linear-to-r from-primary to-purple-500 bg-clip-text text-transparent">
                 Welcome Back
               </h1>
               <p className="text-muted-foreground text-sm mt-2">
-                Login to your futuristic auth system
+                Login to your futuristic auth app
               </p>
             </div>
+
+            
+
+            {/*error section*/}
+            {error &&(<div className="mb-4">
+              <Alert variant={"destructive"}>
+              <AlertCircleIcon/>
+              <AlertTitle>{error?.response   ?   error?.response?.data?.message   :   error?.message}</AlertTitle>
+              </Alert>
+            </div>)
+            }
+            
 
             {/* Email */}
             <div className="mb-4 relative">
@@ -41,8 +108,9 @@ export default function LoginPage() {
               <Input
                 type="email"
                 placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                name="email"
+                value={data.email}
+                onChange={handleInputChange}
                 className="pl-10 h-11"
               />
             </div>
@@ -53,19 +121,28 @@ export default function LoginPage() {
               <Input
                 type="password"
                 placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                name="password"
+                value={data.password}
+                onChange={handleInputChange}
                 className="pl-10 h-11"
               />
             </div>
 
+            
             {/* Login Button */}
             <Button
-              onClick={handleLogin}
-              className="w-full bg-primary hover:bg-primary/90 h-11"
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary hover:bg-primary/90 h-11 cursor-pointer"
+              
             >
-              Login
+              {/*if loading else it will show login*/}
+              {loading ? <>
+              <Spinner/> Logging in...</> 
+                 : "Login"}
             </Button>
+
+            
 
             {/* Divider */}
             <div className="flex items-center gap-2 my-4">
@@ -91,6 +168,7 @@ export default function LoginPage() {
                 Continue with GitHub
               </Button>
             </div>
+            </form>
 
           </CardContent>
         </Card>
