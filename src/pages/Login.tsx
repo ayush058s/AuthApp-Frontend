@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
+import useAuth from "@/auth/store";
 
 export default function LoginPage() {
   const [data, setData] = useState<LoginData>({
@@ -21,6 +22,9 @@ export default function LoginPage() {
   const [error, setError] = useState<any>(null);
 
   const navigate = useNavigate();
+
+
+  const login = useAuth((state) => state.login);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setData((prev) => {
@@ -46,10 +50,13 @@ export default function LoginPage() {
 
     try {
       setLoading(true);
-      const userInfo = await loginUser(data);
+      // const userInfo = await loginUser(data);
+      // toast.success("User logged in successfully"); 
+      // console.log(userInfo);
 
-      toast.success("User logged in successfully");
-      console.log(userInfo);
+      // login function: useAuth
+      await login(data);
+
       setData({
         email: "",
         password: "",
