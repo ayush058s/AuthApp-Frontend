@@ -2,6 +2,7 @@ import type RegisterData from "@/models/RegisterData";
 import apiClient from "@/config/ApiClient";
 import type { LoginData } from "@/models/LoginData";
 import type LoginResponseData from "@/models/LoginResponseData";
+import type User from "@/models/User";
 
 // before this config axios in  ApiClient in config package 
 // api call to server to save data
@@ -22,10 +23,22 @@ export const logoutUser = async () => {
 }
 
 
+// get user by email
+export const getCurrentUser = async (emailId: string | undefined) => {
+    const response = await apiClient.get<User>(`/users/email/${emailId}`);
+    return response.data;
+}
 
-// get cuurent login user
 
-
+// get all users
+export const allUsers = async () => {
+    const response = await apiClient.get(`/users`);
+    return response.data;
+}
+export const activeUsers = async () => {
+    const response = await apiClient.get(`/users`);
+    return response.data;
+}
 
 // refresh token
 
