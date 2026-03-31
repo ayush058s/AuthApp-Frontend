@@ -14,13 +14,34 @@ import {
   Search,
   Bell,
 } from "lucide-react";
-import { getCurrentUser } from "@/services/AuthService";
-import { useState } from "react";
+import { allUsers, getCurrentUser } from "@/services/AuthService";
+import { useEffect, useState } from "react";
 import type User from "@/models/User";
 import toast from "react-hot-toast";
+
 const UserHome = () => {
+
+  // all users
+  const [allData, setAllData] = useState<User[]>([])
+
   const { user, logout } = useAuth();
   const[user1, setUser1] = useState<User |null>(null)
+
+  // as i need to display table at the time of load so no need to render again and again
+  useEffect(() => {
+    getAllUsers();
+  }, [])
+
+  const getAllUsers = async () =>{
+    try {
+      const data = await allUsers();
+      setAllData(data);
+      toast.success("All users")
+    } catch (error) {
+      console.log(error)
+      toast.error("Error fetching users")
+    }
+  }
 
   
   const getUserData = async () => {
@@ -107,9 +128,38 @@ const UserHome = () => {
 
             <div className="flex justify-between mb-4">
               <div className="flex gap-2">
-                <Button  size="sm" variant="secondary">All</Button>
-                <Button onClick={getUserData} size="sm" variant="ghost">Active</Button>
-                <Button size="sm" variant="ghost">Disabled</Button>
+
+                <Button onClick={getAllUsers} size="sm" variant="secondary">
+                  All
+                </Button>
+
+                <Button 
+                onClick={() => {
+                  try {
+                    const active  = allData.filter(u => u.enabled);
+                  setAllData(active);
+                  toast.success("Showing Active Users")
+                  } catch (error) {
+                    
+                  }
+                }} 
+                size="sm" variant="ghost">
+                  Active
+                </Button>
+                <Button 
+                onClick={() => {
+                  try {
+                    const disabled = allData.filter(u => !u.enabled);
+                  setAllData(disabled);
+                  toast.success("Disabled Users")
+                  
+                  } catch (error) {
+                    
+                  }
+                }}
+                 size="sm" variant="ghost">
+                  Disabled
+                </Button>
               </div>
               <span className="text-sm text-gray-400">
                 Showing 4 users
@@ -127,10 +177,16 @@ const UserHome = () => {
               </thead>
 
               <tbody>
-                <TableRow name="Ayush Singh" status="Active" provider="Google" date="Today" />
+                {allData.map((user, index) => (
+                  <TableRow name={user.name || "No name"} status={user.enabled ? "Active" : "Disabled"} provider={user.providor} date={user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"} />
+                ))}
+                
+                
+
+                {/* <TableRow name="Ayush Singh" status="Active" provider="Google" date="Today" />
                 <TableRow name="Rohit" status="Active" provider="GitHub" date="2d ago" />
                 <TableRow name="Neha" status="Disabled" provider="Email" date="1w ago" />
-                <TableRow name="Arjun" status="Active" provider="Google" date="3h ago" />
+                <TableRow name="Arjun" status="Active" provider="Google" date="3h ago" /> */}
               </tbody>
             </table>
 

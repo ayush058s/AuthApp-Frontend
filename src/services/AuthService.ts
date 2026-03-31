@@ -31,14 +31,11 @@ export const getCurrentUser = async (emailId: string | undefined) => {
 
 
 // get all users
-export const allUsers = async () => {
-    const response = await apiClient.get(`/users`);
+export const allUsers = async (): Promise<User[]> => {
+    const response = await apiClient.get<User[]>(`/users`);
     return response.data;
 }
-export const activeUsers = async () => {
-    const response = await apiClient.get(`/users`);
-    return response.data;
-}
+
 
 // refresh token
 
