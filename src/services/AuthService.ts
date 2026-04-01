@@ -38,6 +38,10 @@ export const allUsers = async (): Promise<User[]> => {
 
 
 // refresh token
+export const refreshToken = async () => {
+    const response = await apiClient.post<LoginResponseData>(`/auth/response`);
+    return response.data;
+}
 
 
 // apis

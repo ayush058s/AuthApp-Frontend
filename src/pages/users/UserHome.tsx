@@ -5,15 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import {
-  Home,
-  BarChart,
-  Users,
-  Folder,
-  Settings,
-  Search,
-  Bell,
-} from "lucide-react";
+import { Home, BarChart, Users, Folder, Settings, Search, Bell } from "lucide-react";
 import { allUsers, getCurrentUser } from "@/services/AuthService";
 import { useEffect, useState } from "react";
 import type User from "@/models/User";
@@ -23,6 +15,9 @@ const UserHome = () => {
 
   // all users
   const [allData, setAllData] = useState<User[]>([])
+
+  //
+  const [filteredData, setFilteredData] = useState<User[]>([]);
 
   const { user, logout } = useAuth();
   const[user1, setUser1] = useState<User |null>(null)
@@ -36,6 +31,7 @@ const UserHome = () => {
     try {
       const data = await allUsers();
       setAllData(data);
+      setFilteredData(data);
       toast.success("All users")
     } catch (error) {
       console.log(error)
@@ -79,8 +75,8 @@ const UserHome = () => {
         <div className="flex justify-between items-center mb-6">
 
           <div className="flex items-center gap-3">
-            <div className="w-4 h-4 bg-gradient-to-r from-purple-400 to-purple-600 rounded-sm" />
-            <span className="font-semibold">Auth App</span>
+            <div className="w-4 h-4 bg-linear-to-r from-purple-400 to-purple-600 rounded-sm" />
+            <span className="font-semibold">Dashboard</span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -96,11 +92,11 @@ const UserHome = () => {
 
             <Bell size={18} className="text-gray-400" />
 
-            <Badge className="bg-green-600">{user?.name}</Badge>
+            {/* <Badge className="bg-green-600">{user?.name}</Badge>
 
             <Button variant="outline" onClick={() => logout()}>
               Logout
-            </Button>
+            </Button> */}
           </div>
         </div>
 
@@ -129,15 +125,17 @@ const UserHome = () => {
             <div className="flex justify-between mb-4">
               <div className="flex gap-2">
 
-                <Button onClick={getAllUsers} size="sm" variant="secondary">
+                <Button onClick={() => {
+                  setFilteredData(allData);
+                }} size="sm" variant="secondary">
                   All
                 </Button>
 
                 <Button 
                 onClick={() => {
                   try {
-                    const active  = allData.filter(u => u.enabled);
-                  setAllData(active);
+                    const active = allData.filter(u => Boolean(u.enabled));
+                  setFilteredData(active);
                   toast.success("Showing Active Users")
                   } catch (error) {
                     
@@ -149,9 +147,9 @@ const UserHome = () => {
                 <Button 
                 onClick={() => {
                   try {
-                    const disabled = allData.filter(u => !u.enabled);
-                  setAllData(disabled);
-                  toast.success("Disabled Users")
+                    const disabled = allData.filter(u => !Boolean(u.enabled));
+                    setFilteredData(disabled);
+                    toast.success("Disabled Users")
                   
                   } catch (error) {
                     
@@ -162,7 +160,7 @@ const UserHome = () => {
                 </Button>
               </div>
               <span className="text-sm text-gray-400">
-                Showing 4 users
+                Showing {allData.length} users
               </span>
             </div>
 
@@ -178,7 +176,11 @@ const UserHome = () => {
 
               <tbody>
                 {allData.map((user, index) => (
-                  <TableRow name={user.name || "No name"} status={user.enabled ? "Active" : "Disabled"} provider={user.providor} date={user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"} />
+                  <TableRow name={user.name || "No name"} 
+                  status={user.enabled ? "Active" : "Disabled"} 
+                  provider={user.providor} 
+                  date={user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"} 
+                  />
                 ))}
                 
                 
