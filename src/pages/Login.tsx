@@ -10,6 +10,7 @@ import { useNavigate } from "react-router";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
 import useAuth from "@/auth/store";
+import OAuth2Buttons from "@/components/OAuth2Buttons";
 
 export default function LoginPage() {
   const [data, setData] = useState<LoginData>({
@@ -158,22 +159,7 @@ export default function LoginPage() {
             </div>
 
             {/* Social Buttons */}
-            <div className="flex flex-col gap-3">
-              <Button
-                variant="outline"
-                className="w-full h-11 flex items-center justify-center"
-              >
-                Continue with Google
-              </Button>
-
-              <Button
-                variant="outline"
-                className="w-full h-11 flex items-center justify-center gap-2"
-              >
-                <Github size={18} />
-                Continue with GitHub
-              </Button>
-            </div>
+            <OAuth2Buttons />
             </form>
 
           </CardContent>

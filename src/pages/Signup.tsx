@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import type RegisterData from "@/models/RegisterData";
 import { registerUser } from "@/services/AuthService";  
 import { useNavigate } from "react-router";
+import OAuth2Buttons from "@/components/OAuth2Buttons";
 
 
 
@@ -154,16 +155,7 @@ export default function SignupPage() {
             </div>
 
             {/* Social Buttons */}
-            <div className="flex flex-col gap-3">
-              <Button variant="outline" className="w-full flex items-center justify-center gap-2 h-11">
-                Continue with Google
-              </Button>
-
-              <Button variant="outline" className="w-full flex items-center justify-center gap-2 h-11">
-                <Github size={18} />
-                Continue with GitHub
-              </Button>
-            </div>
+            <OAuth2Buttons />
 
           </CardContent>
         </Card>

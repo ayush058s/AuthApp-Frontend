@@ -39,7 +39,7 @@ export const allUsers = async (): Promise<User[]> => {
 
 // refresh token
 export const refreshToken = async () => {
-    const response = await apiClient.post<LoginResponseData>(`/auth/response`);
+    const response = await apiClient.post<LoginResponseData>(`/auth/refresh`);
     return response.data;
 }
 
